@@ -1,2 +1,6 @@
 mod note;
-pub use self::note::*;
+mod user;
+pub use self::{
+    note::*,
+    user::*
+};

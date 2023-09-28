@@ -6,7 +6,7 @@ use axum::{
     routing::get,
     BoxError, Json, Router, ServiceExt,
 };
-pub fn routes()->Router{
+pub fn note_routes()->Router{
     Router::new().route("/api/note",get(create_note))
 }
 
