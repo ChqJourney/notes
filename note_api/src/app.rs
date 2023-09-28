@@ -1,9 +1,9 @@
 use std::time::Duration;
 
-use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode}, body::Body, response::Response, BoxError};
+use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method}, body::Body, response::Response, BoxError};
 use axum_trace_id::SetTraceIdLayer;
 use tower::ServiceBuilder;
-use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer};
+use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer, cors::CorsLayer};
 use tracing::Span;
 
 use crate::routes;
@@ -62,6 +62,14 @@ pub fn create_app()->Router{
                             },
                         ),
                 )
+                .layer(CorsLayer::new()
+                .allow_origin([
+                    "http://localhost:3000".parse::<HeaderValue>().unwrap(),
+                    "http://www.photonee.com".parse::<HeaderValue>().unwrap(),
+                    "http://www.onebitai.com".parse::<HeaderValue>().unwrap(),
+                    ])
+                .allow_methods([Method::GET,Method::POST,Method::DELETE,Method::PATCH,Method::PUT,Method::OPTIONS])
+                .allow_credentials(true))
                 // timeout layer,more than 10sec error
                 .timeout(Duration::from_secs(10))
                 // copy request id to response
