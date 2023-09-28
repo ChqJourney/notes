@@ -11,5 +11,5 @@ pub fn routes()->Router{
 }
 
 pub async fn create_note()->impl IntoResponse{
-    "ddd".into_response()
+    "note created".into_response()
 }

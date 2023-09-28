@@ -54,7 +54,7 @@ async fn main() {
         .init();
     let app = Router::new()
         .merge(routes::routes())
-        .nest_service("/", ServeDir::new("static"))
+        .nest_service("/api", ServeDir::new("static"))
         .route("/api/users", get(users_show))
         .layer(
             ServiceBuilder::new()
