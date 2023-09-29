@@ -8,6 +8,8 @@ use crate::app::create_app;
 mod app;
 mod error;
 mod routes;
+mod models;
+mod repos;
 
 #[tokio::main]
 async fn main() {
@@ -38,7 +40,7 @@ async fn main() {
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
-    
+
     // app router with layers created
     let app = create_app();
 

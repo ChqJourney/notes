@@ -16,7 +16,8 @@ tower-http = {version = "0.4.4",features = ["fs","trace","propagate-header","cor
 tracing = "0.1.37"
 tracing-appender = "0.2.2"
 tracing-subscriber = {version = "0.3.17",features = ["env-filter","fmt"]}
+sqlx = { version = "0.7.2", features = [ "runtime-tokio-rustls", "sqlite", "chrono", "rust_decimal", "macros" ] }
+chrono= {version="0.4.24",features= ["serde"] }
 
 [profile.release]
 panic = 'abort'
-RUST_BACKTRACE=1
