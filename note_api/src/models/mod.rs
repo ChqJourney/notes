@@ -1,3 +1,6 @@
 mod notes;
-
-pub use self::notes::*;
+mod users;
+pub use self::{
+    notes::*,
+    users::*
+};
