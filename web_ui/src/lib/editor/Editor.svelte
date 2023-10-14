@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Toolbar from "./Toolbar.svelte";
-    import { applyStyleToSelection, createElement, getCurrentSelection, selectLine, setCursorTo, setSelectionAfterThisElement, setTitle, traverseNodeTree } from "./editor";
+    import { applyStyleToSelection, createElement, getCurrentSelection, removeLineTag, selectLine, setCursorTo, setList, setSelectionAfterThisElement, setTitle, traverseNodeTree } from "./editor";
     let sourceData
     let area;
     let observer;
@@ -33,7 +33,11 @@
                 setTitle(line,e.detail.type)
                 area.focus()
                 setSelectionAfterThisElement(area)
-            }else{
+            }else if(["ol","ul"].includes(e.detail.type)){
+                const line=selectLine()
+                setList(line,e.detail.type)
+            }
+            else{
                 applyStyleToSelection(sel,e.detail.type)
             }
 
@@ -41,7 +45,9 @@
         on:switch_out={(e)=>{
             console.log(e.detail)
             if(e.detail.to==="paragraph"){
-                setSelectionAfterThisElement(area)
+                let line=selectLine()
+                removeLineTag(line)
+                // setSelectionAfterThisElement(area)
                 area.focus()
             }
         }}
@@ -63,10 +69,6 @@
             bind:this={area}
             id="area"
         >
-       <ul>
-        <li>adfadf</li>
-        <li>adfadf</li>
-       </ul>
        <!-- abc<strong>11<i>2345</i>66</strong>def<u>789</u>ghi -->
     </div>
     <div class="border border-dashed mt-4 p-2 rounded-md h-[200px] w-full">{sourceData}</div>

@@ -12,17 +12,17 @@ const clickFire=(type)=>{
         dispatch('swith_in',{type:currentEditStatus})
     }
         
-    if(["ul","ol","h1","h2","h3","h4","h5","h6"].includes(type)){
+    if(["h1","h2","h3","h4","h5","h6"].includes(type)){
         currentEditStatus="paragraph"
     }
 }
 </script>
 
      <div class={` bg-gray-600`}>
-        <button on:click={()=>clickFire('ul')} class="border-0 hover:bg-gray-400 fill-sky-400 hover:fill-white p-1 rounded-md">
+        <button on:click={()=>clickFire('ul')} class={`border-0  p-1 ${currentEditStatus==="ul"?"bg-gray-400 fill-white hover:bg-gray-500":"hover:bg-gray-400 fill-sky-400 hover:fill-white "} rounded-md`}>
             <svg class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M912 192H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM912 476H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM912 760H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10571"></path><path d="M160 228m-56 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0Z" p-id="10572"></path><path d="M160 512m-56 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0Z"></path><path d="M160 796m-56 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0Z"></path></svg>
         </button>
-        <button on:click={()=>clickFire('ol')} class="border-0 hover:bg-gray-400 fill-sky-400 hover:fill-white p-1 rounded-md">
+        <button on:click={()=>clickFire('ol')} class={`border-0  p-1 ${currentEditStatus==="ol"?"bg-gray-400 fill-white hover:bg-gray-500":"hover:bg-gray-400 fill-sky-400 hover:fill-white "} rounded-md`}>
             <svg class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M920 760H336c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM920 192H336c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM920 476H336c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM216 712H100c-2.2 0-4 1.8-4 4v34c0 2.2 1.8 4 4 4h72.4v20.5h-35.7c-2.2 0-4 1.8-4 4v34c0 2.2 1.8 4 4 4h35.7V838H100c-2.2 0-4 1.8-4 4v34c0 2.2 1.8 4 4 4h116c2.2 0 4-1.8 4-4V716c0-2.2-1.8-4-4-4zM100 188h38v120c0 2.2 1.8 4 4 4h40c2.2 0 4-1.8 4-4V152c0-4.4-3.6-8-8-8h-78c-2.2 0-4 1.8-4 4v36c0 2.2 1.8 4 4 4zM216 428H100c-2.2 0-4 1.8-4 4v36c0 2.2 1.8 4 4 4h68.4l-70.3 77.7c-1.3 1.5-2.1 3.4-2.1 5.4V592c0 2.2 1.8 4 4 4h116c2.2 0 4-1.8 4-4v-36c0-2.2-1.8-4-4-4h-68.4l70.3-77.7c1.3-1.5 2.1-3.4 2.1-5.4V432c0-2.2-1.8-4-4-4z"></path></svg>
         </button>
         <button on:click={()=>clickFire('h1')} class="border-0 hover:bg-gray-400 fill-sky-400 hover:fill-white p-1 rounded-md">

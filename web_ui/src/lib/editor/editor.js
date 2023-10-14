@@ -58,6 +58,38 @@ export const setTitle = (range, type) => {
     sel.removeAllRanges()
     sel.addRange(range)
 }
+export const setList=(range,type)=>{
+    let ele
+    switch(type){
+        case "ul":
+            ele=document.createElement("ul")
+            ele.classList.add("list-inside")
+            ele.classList.add("list-disc")
+            break;
+            case "ol":
+                ele=document.createElement("ol")
+            ele.classList.add("list-inside")
+            ele.classList.add("list-decimal")
+            break;
+            default:
+                break;
+    }
+    const subEle=document.createElement("li")
+    
+    range.surroundContents(subEle)
+    range.setStartBefore(subEle)
+    range.setEndAfter(subEle)
+    range.surroundContents(ele)
+    range.setStartAfter(subEle)
+    range.setEndAfter(subEle)
+    let sel = window.getSelection()
+    sel.removeAllRanges()
+    sel.addRange(range)
+}
+export const removeLineTag=(range)=>{
+    const li=range.commonAncestorContainer
+    li.outerHTML=li.innerHTML
+}
 export const setSelectionAfterThisElement = (container) => {
     const sel = window.getSelection()
     const dir = checkNodeDirection(sel.anchorNode, sel.focusNode)
