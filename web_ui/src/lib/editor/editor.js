@@ -102,8 +102,7 @@ export const setSelectionAfterThisElement = (container) => {
     let newTextNode = document.createTextNode("\u00A0")
 
     while (node.nextSibling) {
-        r.setStartAfter(node.nextSibling)
-        r.setEndAfter(node.nextSibling)
+       
         node = node.nextSibling
     }
     while (node && node.parentNode && node.parentNode !== container) {
@@ -203,23 +202,8 @@ export const createElement = (txtContent, action) => {
     }
 
 }
-export const replaceAction = (commonAncestor, selection, action) => {
-    // whole node
-}
 
 
-export const selectionHandle = (selection) => {
-    switch (selection.type) {
-        case 'Caret':
-
-            break;
-        case 'Range':
-            break;
-        default:
-            { }
-            break;
-    }
-}
 export const checkNodeDirection = (baseNode, otherNode) => {
     if (baseNode.compareDocumentPosition(otherNode) & Node.DOCUMENT_POSITION_FOLLOWING) {
         // 正向
@@ -317,7 +301,7 @@ export const traverseNodeTree = (entryNode, sel, tag) => {
         });
     }
 
-}
+}  
 
 export const applyStyleToSelection = (sel, tag) => {
 
