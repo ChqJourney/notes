@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@tiptap/core": "^2.1.12",
+    "@tiptap/extension-bubble-menu": "^2.1.12",
+    "@tiptap/extension-underline": "^2.1.12",
     "@tiptap/pm": "^2.1.12",
     "@tiptap/starter-kit": "^2.1.12",
     "@wangeditor/editor": "^5.1.23",
