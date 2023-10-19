@@ -305,6 +305,13 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-dropcursor/-/extension-dropcursor-2.1.12.tgz#9da0c275291c9d47497d3db41b4d70d96366b4ff"
   integrity sha512-0tT/q8nL4NBCYPxr9T0Brck+RQbWuczm9nV0bnxgt0IiQXoRHutfPWdS7GA65PTuVRBS/3LOco30fbjFhkfz/A==
 
+"@tiptap/extension-floating-menu@^2.1.12":
+  version "2.1.12"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-floating-menu/-/extension-floating-menu-2.1.12.tgz#68a658b2b9bdd3a0fc1afc5165231838061a8fde"
+  integrity sha512-uo0ydCJNg6AWwLT6cMUJYVChfvw2PY9ZfvKRhh9YJlGfM02jS4RUG/bJBts6R37f+a5FsOvAVwg8EvqPlNND1A==
+  dependencies:
+    tippy.js "^6.3.7"
+
 "@tiptap/extension-gapcursor@^2.1.12":
   version "2.1.12"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-gapcursor/-/extension-gapcursor-2.1.12.tgz#63844c3abd1a38af915839cf0c097b6d2e5a86fe"
@@ -329,6 +336,11 @@
   version "2.1.12"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-2.1.12.tgz#2191d4ff68ed39381d65971ad8e2aa1be43e6d6b"
   integrity sha512-RRuoK4KxrXRrZNAjJW5rpaxjiP0FJIaqpi7nFbAua2oHXgsCsG8qbW2Y0WkbIoS8AJsvLZ3fNGsQ8gpdliuq3A==
+
+"@tiptap/extension-image@^2.1.12":
+  version "2.1.12"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-image/-/extension-image-2.1.12.tgz#ab035db82f0961b1d906c4d426bf68be563fdcd3"
+  integrity sha512-VCgOTeNLuoR89WoCESLverpdZpPamOd7IprQbDIeG14sUySt7RHNgf2AEfyTYJEHij12rduvAwFzerPldVAIJg==
 
 "@tiptap/extension-italic@^2.1.12":
   version "2.1.12"
