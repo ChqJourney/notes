@@ -1,17 +1,18 @@
 use std::time::Duration;
 
-use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method}, body::Body, response::Response, BoxError};
+use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method}, body::Body, response::Response, BoxError, middleware};
 use axum_trace_id::SetTraceIdLayer;
 use tower::ServiceBuilder;
 use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer, cors::CorsLayer};
 use tracing::Span;
 
-use crate::routes;
+use crate::{routes, utils::auth};
 
 pub fn create_app()->Router{
     Router::new()
-        .merge(routes::user_routes())
-        .merge(routes::note_routes())
+    .merge(routes::note_routes())
+    .route_layer(middleware::from_fn(auth))
+    .merge(routes::user_routes())
         .nest_service("/api", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()

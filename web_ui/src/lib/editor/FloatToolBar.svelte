@@ -20,9 +20,9 @@ const clickFire=(type)=>{
 }
 let isHMenuOpen=false
 </script>
+
      <div class={` bg-gray-600 flex`}>
-        <button disabled={!editor.can().chain().focus().toggleBold().run()}
-         on:click={()=>clickFire('ul')} class={`border-0  p-1 ${editor.isActive('bulletList')?"bg-gray-400 fill-white hover:bg-gray-500":"hover:bg-gray-400 fill-sky-400 hover:fill-white "} rounded-md`}>
+        <button on:click={()=>clickFire('ful')} class={`border-0  p-1 ${editor.isActive('bulletList')?"bg-gray-400 fill-white hover:bg-gray-500":"hover:bg-gray-400 fill-sky-400 hover:fill-white "} rounded-md`}>
             <svg class="h-5 w-5" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M912 192H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM912 476H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM912 760H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z"></path><path d="M160 228m-56 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0Z" p-id="10572"></path><path d="M160 512m-56 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0Z"></path><path d="M160 796m-56 0a56 56 0 1 0 112 0 56 56 0 1 0-112 0Z"></path></svg>
         </button>
         <button on:click={()=>clickFire('ol')} class={`border-0  p-1 ${currentEditStatus==="ol"?"bg-gray-400 fill-white hover:bg-gray-500":"hover:bg-gray-400 fill-sky-400 hover:fill-white "} rounded-md`}>

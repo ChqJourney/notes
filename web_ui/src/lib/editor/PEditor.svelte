@@ -7,6 +7,7 @@
   import BubbleMenu from "@tiptap/extension-bubble-menu";
   import Bubble from "./Bubble.svelte";
   import Float from "./Float.svelte";
+  import FloatingMenu, { FloatingMenuPlugin } from '@tiptap/extension-floating-menu';
   import Dropcursor from '@tiptap/extension-dropcursor'
 import Image from '@tiptap/extension-image'
   let element;
@@ -21,8 +22,11 @@ import Image from '@tiptap/extension-image'
         BubbleMenu.configure({
           element: document.querySelector(".menu"),
         }),
+        FloatingMenu.configure({
+      element: document.querySelector('.fmenu'),
+    }),
         Image,
-      Dropcursor,
+      Dropcursor
       ],
       editorProps: {
         attributes: {
@@ -49,11 +53,24 @@ import Image from '@tiptap/extension-image'
 </script>
 
 {#if editor}
+<Float {editor}>
+  <Toolbar
+   {editor}
+   on:swith_in={(e) => {
+    switch (e.detail.type) {
+      case "ful":
+        editor.chain().focus().setBulletList().run();
+        break;}}}
+   />
+</Float>
   <Bubble {editor}>
     <Toolbar
       {editor}
       on:swith_in={(e) => {
         switch (e.detail.type) {
+          case "ful":
+            editor.chain().focus().setBulletList().run();
+            break;
           case "strong":
             editor.chain().focus().toggleBold().run();
             break;
