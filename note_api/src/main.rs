@@ -1,4 +1,4 @@
-use std::{net::SocketAddr};
+use std::{net::SocketAddr, fs::{File, self}};
 
 use tracing_subscriber::{
     layer::SubscriberExt, util::SubscriberInitExt,
@@ -14,6 +14,7 @@ mod utils;
 
 #[tokio::main]
 async fn main() {
+    
     // log setting in production
     #[cfg(not(debug_assertions))]
     let debug_file = rolling::hourly("./logs", "debug");
