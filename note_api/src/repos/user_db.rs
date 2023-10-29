@@ -6,12 +6,15 @@ use sqlx::{
 };
 #[derive(Clone)]
 pub struct UserDbService {
-    pub conn: SqlitePool,
+    pub conn: Pool<Sqlite>,
 }
 impl UserDbService {
-    pub async fn new(path:&str)->Self{
+    pub async fn new(pool:Pool<Sqlite>)->Self{
         UserDbService {
-            conn: SqlitePool::connect(path).await.unwrap(),
+            conn: pool,
         }
+    }
+    pub async fn ensure_db_created(){
+        
     }
 }

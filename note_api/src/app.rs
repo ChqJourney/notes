@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{time::Duration, sync::Arc};
 
 use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method}, body::Body, response::Response, BoxError, middleware};
 use axum_trace_id::SetTraceIdLayer;
@@ -6,13 +6,14 @@ use tower::ServiceBuilder;
 use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer, cors::CorsLayer};
 use tracing::Span;
 
-use crate::{routes, utils::auth};
+use crate::{routes, utils::auth, AppState};
 
-pub fn create_app()->Router{
+pub fn create_app(app_state:AppState)->Router{
     Router::new()
     .merge(routes::note_routes())
-    .route_layer(middleware::from_fn(auth))
+    .merge(routes::account_routes(app_state.clone()))
     .merge(routes::user_routes())
+    .with_state(app_state)
         .nest_service("/api", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()
@@ -76,9 +77,7 @@ pub fn create_app()->Router{
                 // copy request id to response
                 .layer(PropagateHeaderLayer::new(HeaderName::from_static("x-request-id")))
                 
-        )
-        // add request-id to every request
-        .layer(SetTraceIdLayer::<String>::new().with_header_name("x-request-id"))
+        ).layer(SetTraceIdLayer::<String>::new().with_header_name("x-request-id"))
 }
 
 // outside routes error handler

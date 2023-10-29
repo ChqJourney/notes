@@ -1,0 +1,67 @@
+use axum::{
+    extract::{State, TypedHeader},
+    headers::authorization::{Authorization, Bearer},
+    http::Request,
+    http::StatusCode,
+    middleware::{self, Next},
+    response::{IntoResponse, Response},
+    routing::get,
+    Json, Router,
+};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+
+use crate::AppState;
+
+use super::decode_token;
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct AuthMiddleWare {
+    user_id: String,
+    email: String,
+    claims: Value,
+}
+
+pub async fn auth<B>(
+    // run the `TypedHeader` extractor
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    State(data): State<AppState>,
+    // you can also add more extractors here but the last
+    // extractor must implement `FromRequest` which
+    // `Request` does
+    mut request: Request<B>,
+    next: Next<B>,
+) -> Result<impl IntoResponse, (StatusCode, Json<Value>)> {
+    let validation_result =
+        decode_token(auth.token().to_string(), data.inner.env.pub_key.as_bytes()).map_err(|e| {
+            let error_response = json!( {
+                "status": "fail",
+                "message": "You are not logged in, please provide token".to_string(),
+            });
+            (StatusCode::UNAUTHORIZED, Json(error_response)).into_response()
+        });
+    let token_validate_result = validation_result.map_err(|e| {
+        let error_response = json!( {
+            "status": "fail",
+            "message": "You are not logged in, please provide token".to_string(),
+        });
+        (StatusCode::UNAUTHORIZED, Json(error_response)).into_response()
+    });
+    if token_validate_result.is_ok(){
+
+        let token_data = token_validate_result.unwrap().claims;
+        request.extensions_mut().insert(AuthMiddleWare {
+            user_id: token_data["sub"].as_str().unwrap().to_owned(),
+            email: token_data["email"].as_str().unwrap().to_owned(),
+            claims: token_data,
+        });
+        
+        Ok(next.run(request).await)
+    }else{
+        Err((StatusCode::UNAUTHORIZED,Json(json!({}))))
+    }
+}
+
+fn token_is_valid(token: &str) -> bool {
+    true
+}

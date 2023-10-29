@@ -1,6 +1,0 @@
-GET http://localhost:3000/
-Content-Type: application/xml
-X-Forwarded-For: 124.2.33.143
-###
-
-GET https://www.photonee.com/api/note HTTP/1.1

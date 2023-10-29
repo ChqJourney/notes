@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::{
     body::{Body, HttpBody},
     error_handling::HandleErrorLayer,
@@ -6,7 +8,9 @@ use axum::{
     routing::get,
     BoxError, Json, Router, ServiceExt,
 };
-pub fn note_routes()->Router{
+
+use crate::AppState;
+pub fn note_routes()->Router<AppState>{
     Router::new().route("/api/note",get(create_note))
 }
 
