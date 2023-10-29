@@ -2,8 +2,9 @@ use std::{net::SocketAddr, fs::{File, self}, sync::Arc};
 use axum::extract::FromRef;
 use dotenv;
 use sqlx::{Sqlite, Pool, sqlite::SqlitePoolOptions};
+use tracing_appender::rolling;
 use tracing_subscriber::{
-    layer::SubscriberExt, util::SubscriberInitExt,
+    layer::SubscriberExt, util::SubscriberInitExt, fmt::writer::MakeWriterExt,
 };
 
 use crate::{app::create_app, config::Config};
@@ -45,6 +46,7 @@ async fn main() {
             std::process::exit(1);
         }
     };
+    // let dd=rolling::hourly("");
     // log setting in production
     #[cfg(not(debug_assertions))]
     let debug_file = rolling::hourly("./logs", "debug");
