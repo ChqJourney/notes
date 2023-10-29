@@ -26,8 +26,8 @@ use uuid::Uuid;
 
 pub fn user_routes() -> Router<AppState> {
     Router::new()
-        .route("/api/register", post(register))
-        .route("/api/login", post(login))
+        .route("/register", post(register))
+        .route("/login", post(login))
         
 }
 

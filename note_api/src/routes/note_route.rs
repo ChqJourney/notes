@@ -11,7 +11,7 @@ use axum::{
 
 use crate::AppState;
 pub fn note_routes()->Router<AppState>{
-    Router::new().route("/api/note",get(create_note))
+    Router::new().route("/note",get(create_note))
 }
 
 pub async fn create_note()->impl IntoResponse{
