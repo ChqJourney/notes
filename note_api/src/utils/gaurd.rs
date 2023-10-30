@@ -33,7 +33,8 @@ pub async fn auth<B>(
     next: Next<B>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<Value>)> {
     let validation_result =
-        decode_token(auth.token().to_string(), data.inner.env.pub_key.as_bytes()).map_err(|e| {
+        decode_token(auth.token().to_string(), data.inner.env.secret_key)
+            .map_err(|e| {
             let error_response = json!( {
                 "status": "fail",
                 "message": "You are not logged in, please provide token".to_string(),
@@ -62,6 +63,4 @@ pub async fn auth<B>(
     }
 }
 
-fn token_is_valid(token: &str) -> bool {
-    true
-}
+

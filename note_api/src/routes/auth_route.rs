@@ -1,9 +1,10 @@
 use std::{fs, sync::Arc};
 
+use crate::models::{LoginModel, RegisterModel, RefreshModel};
+use crate::utils::{create_at_claims, create_rt_claims, generate_token, decode_token};
 use crate::AppState;
-use crate::utils::{generate_token, create_claims};
 use crate::{
-    models::{TokenClaims, User},
+    models::{User},
     utils::hash_pwd,
 };
 use argon2::{
@@ -17,7 +18,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use axum_valid::{Garde, json};
+use axum_valid::{json, Garde};
 use garde::{validate, Validate};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -28,7 +29,7 @@ pub fn user_routes() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
         .route("/login", post(login))
-        
+        .route("/refresh", post(refresh))
 }
 
 async fn register(
@@ -72,42 +73,82 @@ async fn login(
     State(data): State<AppState>,
     Json(login_model): Json<LoginModel>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    let verify_result=verify_user(login_model, &data.inner.db).await
+    let verify_result = verify_user(login_model, &data.inner.db).await.map_err(|e| {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": "invalid email or password"
+        });
+        (StatusCode::BAD_REQUEST, Json(error_response))
+    })?;
+    let token_obj=create_tokens(data, verify_result.id,verify_result.email).await
+    .map_err(|e|{
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": "invalid email or password"
+        });
+        (StatusCode::BAD_REQUEST, Json(error_response))
+    })?;
+        
+    
+    Ok((
+        StatusCode::OK,
+        Json(token_obj),
+    ))
+}
+
+
+async fn refresh(State(data): State<AppState>,
+Json(refresh_model): Json<RefreshModel>,)->Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let token_data=decode_token(refresh_model.refresh_token, data.clone().inner.env.secret_key)
         .map_err(|e|{
             let error_response = serde_json::json!({
                 "status": "fail",
                 "message": "invalid email or password"
             });
             (StatusCode::BAD_REQUEST,Json(error_response))
-        });
-        let claims_result=create_claims(verify_result.unwrap(), &data.inner.db).await
+        })?;
+       let email=token_data.claims["email"].as_str().unwrap().to_owned();
+       let user_id=token_data.claims["sub"].as_str().unwrap().to_owned();
+        let token_obj=create_tokens(data, user_id,email).await
             .map_err(|e|{
-            let error_response = serde_json::json!({
-                "status": "fail",
-                "message": "invalid email or password"
-            });
-            (StatusCode::BAD_REQUEST,Json(error_response))
-        });
-        let token_result=generate_token(claims_result.unwrap())
-            .map_err(|e|{
-            let error_response = serde_json::json!({
-                "status": "fail",
-                "message": "invalid email or password"
-            });
-            (StatusCode::BAD_REQUEST,Json(error_response))
-            });
-        
-    Ok((StatusCode::OK,Json(json!({"access_token":token_result.unwrap()}))))
+                let error_response = serde_json::json!({
+                    "status": "fail",
+                    "message": "you need to privide correct token"
+                });
+                (StatusCode::BAD_REQUEST,Json(error_response))
+            })?;
+        Ok((
+            StatusCode::OK,
+            Json(token_obj)
+        ))
 }
 
-async fn verify_user(
+async fn create_tokens(state:AppState,user_id:String,email:String)->Result<Value,Box<dyn std::error::Error>>{
+    let at_claims_result = create_at_claims(user_id.clone(),email.clone(), &state.inner.db,state.inner.env.jwt_expires_in)
+        .await?;
+        // println!("{:#?}",at_claims_result);
+    let at_token_result = generate_token(at_claims_result, state.inner.env.secret_key.clone())?;
+        println!("{:#?}",at_token_result);
+    let rt_claims_result = create_rt_claims(user_id,email,state.inner.env.refresh_expires_in)
+        .await?;
+    let rt_token_result = generate_token(rt_claims_result, state.inner.env.secret_key)?;
+        Ok(json!({
+            "type":"Bearer",
+            "access_token":at_token_result,
+            "refresh_token":rt_token_result,
+            "expires_in":state.inner.env.jwt_expires_in
+        }))
+}
+
+ async fn verify_user(
     login_model: LoginModel,
     pool: &Pool<Sqlite>,
 ) -> Result<User, Box<dyn std::error::Error>> {
-    if let Ok(target_user) = sqlx::query_as::<_, User>("select * from users where email=$1 and is_deleted=0")
-        .bind(login_model.email)
-        .fetch_one(pool)
-        .await
+    if let Ok(target_user) =
+        sqlx::query_as::<_, User>("select * from users where email=$1 and is_deleted=0")
+            .bind(login_model.email)
+            .fetch_one(pool)
+            .await
     {
         let is_pwd_match = verifiy_hashpwd(login_model.password, target_user.clone().password_hash);
         if is_pwd_match {
@@ -119,7 +160,8 @@ async fn verify_user(
         Err("email or password error".into())
     }
 }
-pub fn verifiy_hashpwd(password: String, hashpwd: String) -> bool {
+
+ fn verifiy_hashpwd(password: String, hashpwd: String) -> bool {
     let is_valid = match PasswordHash::new(&hashpwd) {
         Ok(parsed_hash) => Argon2::default()
             .verify_password(password.as_bytes(), &parsed_hash)
@@ -128,21 +170,6 @@ pub fn verifiy_hashpwd(password: String, hashpwd: String) -> bool {
     };
     is_valid
 }
-#[derive(Deserialize, Serialize, Validate, Clone, Debug)]
-pub struct RegisterModel {
-    #[garde(email)]
-    email: String,
-    #[garde(ascii, length(min = 3, max = 50))]
-    user_name: Option<String>,
-    #[garde(length(min = 6, max = 50))]
-    password: String,
-}
-#[derive(Deserialize, Serialize, Validate, Clone, Debug)]
-pub struct LoginModel {
-    #[garde(email)]
-    email: String,
-    #[garde(length(min = 6, max = 50))]
-    password: String,
-}
+
 
 

@@ -1,4 +1,5 @@
 use chrono::{DateTime, Local, Utc};
+use garde::Validate;
 use serde::{Serialize, Deserialize};
 use sqlx::{
     sqlite::{SqliteQueryResult, SqliteRow},
@@ -22,12 +23,6 @@ pub struct User {
     pub is_deleted:bool
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TokenClaims {
-    pub sub: String,
-    pub iat: usize,
-    pub exp: usize,
-}
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, FromRow, Serialize, Clone)]
 pub struct UserClaim{
@@ -35,4 +30,26 @@ pub struct UserClaim{
     pub user_id:Uuid,
     pub claim_type:String,
     pub claim_value:String
+}
+
+#[derive(Deserialize, Serialize, Validate, Clone, Debug)]
+pub struct RegisterModel {
+    #[garde(email)]
+    pub email: String,
+    #[garde(ascii, length(min = 3, max = 50))]
+    pub user_name: Option<String>,
+    #[garde(length(min = 6, max = 50))]
+    pub password: String,
+}
+#[derive(Deserialize, Serialize, Validate, Clone, Debug)]
+pub struct LoginModel {
+    #[garde(email)]
+    pub email: String,
+    #[garde(length(min = 6, max = 50))]
+    pub password: String,
+}
+#[derive(Deserialize, Serialize, Validate, Clone, Debug)]
+pub struct RefreshModel {
+    #[garde(length(min = 6))]
+    pub refresh_token: String,
 }

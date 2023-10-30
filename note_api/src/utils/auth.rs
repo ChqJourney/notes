@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 
 use argon2::{password_hash::{SaltString, rand_core::OsRng}, Argon2, PasswordHasher, PasswordHash, PasswordVerifier};
+use base64::{engine::general_purpose, Engine};
 use jsonwebtoken::{encode, Header, Algorithm, EncodingKey, decode, DecodingKey, Validation, TokenData};
 use serde::{Serialize, Deserialize};
 use serde_json::{json, Value};
 use sqlx::{pool::PoolOptions, Sqlite, FromRow, Pool};
-
-use crate::models::User;
 
 
 pub fn hash_pwd(pwd:String)->Result<String,Box<dyn std::error::Error>>{
@@ -31,11 +30,11 @@ pub struct ClaimKV{
     claim_type:String,
     claim_value:String
 }
-pub async fn create_claims(user:User,pool:&Pool<Sqlite>)->Result<Value,Box<dyn std::error::Error>>{
+pub async fn create_at_claims(user_id:String,email:String,pool:&Pool<Sqlite>,expires_in_minutes:i64)->Result<Value,Box<dyn std::error::Error>>{
     let now = chrono::Utc::now();
-    let expire=(now+chrono::Duration::minutes(60)).timestamp();
-    let mut v=json!({"exp":expire,"iat":now.timestamp(),"iss":"note api","nbf":now.timestamp(),"sub":user.id,"email":user.email});
-    let custom_claims=sqlx::query_as::<_,ClaimKV>("select * from userclaims where user_id=$1").bind(user.id).fetch_all(pool).await?;
+    let expire=(now+chrono::Duration::minutes(expires_in_minutes)).timestamp();
+    let mut v=json!({"exp":expire,"iat":now.timestamp(),"iss":"note api","nbf":now.timestamp(),"sub":user_id,"email":email});
+    let custom_claims=sqlx::query_as::<_,ClaimKV>("select * from userclaims where user_id=$1").bind(user_id).fetch_all(pool).await?;
     if custom_claims.len()==0{
         return Ok(v);
     }
@@ -44,13 +43,20 @@ pub async fn create_claims(user:User,pool:&Pool<Sqlite>)->Result<Value,Box<dyn s
     }
     Ok(v)
 }
-pub fn generate_token(claims:Value)->Result<String,Box<dyn std::error::Error>>{
-    let token = encode(&Header::new(Algorithm::RS256), &claims, &EncodingKey::from_rsa_pem(include_bytes!("../private.pem"))?)?;
+pub async fn create_rt_claims(user_id:String,email:String,expires_in_hours:i64)->Result<Value,Box<dyn std::error::Error>>{
+    let now = chrono::Utc::now();
+    let expire=(now+chrono::Duration::hours(expires_in_hours)).timestamp();
+    let v=json!({"exp":expire,"iat":now.timestamp(),"iss":"note api","nbf":now.timestamp(),"sub":user_id,"email":email});
+    Ok(v)
+}
+pub fn generate_token(claims:Value,secret_str:String)->Result<String,Box<dyn std::error::Error>>{
+    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret_str.as_bytes()))?;
+
     Ok(token)
     
 }
-pub fn decode_token(token:String,key:&[u8])->Result<TokenData<Value>,Box<dyn std::error::Error>>{
-    let token = decode::<Value>(&token, &DecodingKey::from_rsa_pem(include_bytes!("../public.pem"))?, &Validation::new(Algorithm::RS256))?;
+pub fn decode_token(token:String,secret_str:String)->Result<TokenData<Value>,Box<dyn std::error::Error>>{
+    let token = decode::<Value>(&token, &DecodingKey::from_secret(secret_str.as_ref()), &Validation::new(Algorithm::HS256))?;
     Ok(token)
 }
 

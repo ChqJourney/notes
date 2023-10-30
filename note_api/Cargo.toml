@@ -22,6 +22,7 @@ tracing-subscriber = {version = "0.3.17",features = ["env-filter","fmt"]}
 sqlx = { version = "0.7.2", features = [ "runtime-tokio-rustls", "sqlite", "chrono", "rust_decimal", "macros" ] }
 chrono= {version="0.4.24",features= ["serde"] }
 garde = "0.16.1"
+base64="0.21.5"
 axum-valid = { version = "0.11.0", default-features = false, features = ["garde", "basic"] }
 jsonwebtoken={version = "9"}
 [profile.release]
