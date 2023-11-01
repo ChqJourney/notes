@@ -17,9 +17,9 @@ use super::decode_token;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct AuthMiddleWare {
-    user_id: String,
-    email: String,
-    claims: Value,
+    pub user_id: String,
+    pub email: String,
+    pub claims: Value,
 }
 
 pub async fn auth<B>(

@@ -9,7 +9,7 @@ use validator::Validate;
 use core::result::Result::Ok;
 use std::str::FromStr;
 use jsonwebtoken::{encode, Algorithm, Header, EncodingKey, decode, DecodingKey, Validation};
-use crate::model::User;
+use crate::model::{User, Note};
 mod model;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -25,12 +25,24 @@ struct Claims {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let now = chrono::Utc::now();
-    let expire=(now+chrono::Duration::minutes(60)).timestamp();
-    let mut claims=json!({"exp":expire,"iat":now.timestamp(),"iss":"dfd","nbf":now.timestamp(),"sub":"dfadf"});
-    claims.as_object_mut().unwrap().insert("new".to_owned(),json!("adfadf"));
-    
-    println!("{:#?}", claims["iss"].as_str().unwrap());
+    let pool = match SqlitePoolOptions::new()
+        .max_connections(10)
+        .connect("sqlite:user.db")
+        .await
+    {
+        Ok(pool) => {
+            println!("✅Connection to the database is successful!");
+            pool
+        }
+        Err(err) => {
+            println!("🔥 Failed to connect to the database: {:?}", err);
+            std::process::exit(1);
+        }
+    };
+    let id=uuid::Uuid::new_v4();
+    let result=sqlx::query_as::<_,Note>("select id,title from notes")
+            .fetch_all(&pool).await?;
+    println!("{:#?}",result);
     Ok(())
 }
 

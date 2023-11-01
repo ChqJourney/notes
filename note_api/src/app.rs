@@ -10,11 +10,11 @@ use crate::{routes, utils::auth, AppState};
 
 pub fn create_app(app_state:AppState)->Router{
     Router::new()
-    .merge(routes::note_routes())
+    .merge(routes::note_routes(app_state.clone()))
     .merge(routes::account_routes(app_state.clone()))
     .merge(routes::user_routes())
     .with_state(app_state)
-        .nest_service("/api", ServeDir::new("static"))
+        .nest_service("/static", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()
                 // handle error outside routes

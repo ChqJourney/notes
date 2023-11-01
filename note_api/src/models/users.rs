@@ -26,7 +26,7 @@ pub struct User {
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, FromRow, Serialize, Clone)]
 pub struct UserClaim{
-    pub id:Uuid,
+    pub id:String,
     pub user_id:Uuid,
     pub claim_type:String,
     pub claim_value:String

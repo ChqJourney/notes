@@ -38,3 +38,11 @@ pub struct LoginModel{
     #[validate(length(min=6))]
     pub password:String
 }
+
+#[allow(non_snake_case)]
+#[derive(Debug,Validate, Deserialize, FromRow, Serialize, Clone)]
+pub struct Note{
+    id:uuid::Uuid,
+    title:String
+}
+

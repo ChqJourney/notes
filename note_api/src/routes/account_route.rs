@@ -3,6 +3,7 @@ use axum::{Router, routing::{post, get}, extract::State, Json, response::IntoRes
 use serde_json::Value;
 
 use crate::{AppState, utils::{AuthMiddleWare, auth}};
+
 pub fn account_routes(app_state:AppState)->Router<AppState>{
     Router::new().route("/account/info",get(user_info))
         .route_layer(middleware::from_fn_with_state(app_state, auth))

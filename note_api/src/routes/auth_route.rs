@@ -27,13 +27,14 @@ use uuid::Uuid;
 
 pub fn user_routes() -> Router<AppState> {
     Router::new()
-        .route("/register", post(register))
-        .route("/login", post(login))
-        .route("/refresh", post(refresh))
+        .route("/identity/register", post(register))
+        .route("/identity/login", post(login))
+        .route("/identity/refresh", post(refresh))
 }
 
 async fn register(
     State(data): State<AppState>,
+    
     Garde(Json(register_model)): Garde<Json<RegisterModel>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let exists = sqlx::query_as::<_, User>("select * from users where email=$1 and is_deleted=0")
