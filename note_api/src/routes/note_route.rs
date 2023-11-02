@@ -78,25 +78,31 @@ async fn update_note(
 }
 pub async fn query_notes(State(state):State<AppState>,
     Extension(token_info):Extension<AuthMiddleWare>,
-    Garde(Query(query_model)):Garde<Query<QueryModel>>)
+    Query(query_model):Query<QueryModel>)
         ->Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)>{
-            let start_sql=format!("select * from notes where ");
+            let start_sql=format!("select * from notes ");
             let mut sql=Vec::new();
-            if !query_model.content_contains.is_empty(){
-                let sub_sql=format!("text_content like '%{}%'",query_model.content_contains);
+            sql.push("where".to_string());
+            if query_model.content_contains.is_some(){
+                let sub_sql=format!("text_content like '%{}%'",query_model.content_contains.unwrap());
                 sql.push(sub_sql);
             }
-            // if !query_model.title_contains.is_empty(){
-            //     let sub_sql=format!("title like '%{}%'",query_model.title_contains);
-            //     sql.push(sub_sql)
-            // }
-            // if !query_model.created_by.is_empty(){
-            //     let sub_sql=format!("created_by='%{}%'",query_model.created_by);
-            //     sql.push(sub_sql)
-            // }
-            let s=format!("{} {}",start_sql,sql.join(" and "));
-            println!("{}",s);
-            let query_result=sqlx::query_as::<_,Note>(&s)
+            if query_model.title_contains.is_some(){
+                let sub_sql=format!("title like '%{}%'",query_model.title_contains.unwrap());
+                sql.push(sub_sql)
+            }
+            if query_model.created_by.is_some(){
+                let sub_sql=format!("created_by='%{}%'",query_model.created_by.unwrap());
+                sql.push(sub_sql)
+            }
+            let mut final_sql=String::new();
+            if sql.len()==1{
+                final_sql=start_sql;
+            }else{
+                final_sql=format!("{}{}",start_sql,sql.join(" and "));
+            }
+            
+            let query_result=sqlx::query_as::<_,Note>(&final_sql)
                 .fetch_all(&state.inner.db)
                 .await.map_err(|e|{
                     let error_response = serde_json::json!({

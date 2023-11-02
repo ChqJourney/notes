@@ -52,11 +52,11 @@ pub struct NewNoteModel{
     #[garde(skip)]
     pub text_content:String
 }
-#[derive(Serialize, Deserialize,Validate, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct QueryModel{
-    
-    #[garde(length(min = 2))]
-    pub content_contains:String
+    pub created_by:Option<String>,
+    pub title_contains:Option<String>,
+    pub content_contains:Option<String>
 }
 #[derive(Serialize, Deserialize,Validate, Clone, Debug)]
 pub struct DeleteModel{

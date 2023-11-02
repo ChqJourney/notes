@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use argon2::{password_hash::{SaltString, rand_core::OsRng}, Argon2, PasswordHasher, PasswordHash, PasswordVerifier};
 use base64::{engine::general_purpose, Engine};
+use garde::Validate;
 use jsonwebtoken::{encode, Header, Algorithm, EncodingKey, decode, DecodingKey, Validation, TokenData};
 use serde::{Serialize, Deserialize};
 use serde_json::{json, Value};
@@ -25,9 +26,11 @@ pub fn verifiy_hashpwd(password:String,hashpwd:String)->bool{
     };
     is_valid
 }
-#[derive(Serialize,Deserialize,FromRow)]
+#[derive(Serialize,Deserialize,Debug,Validate,FromRow)]
 pub struct ClaimKV{
+    #[garde(skip)]
     claim_type:String,
+    #[garde(skip)]
     claim_value:String
 }
 pub async fn create_at_claims(user_id:String,email:String,pool:&Pool<Sqlite>,expires_in_minutes:i64)->Result<Value,Box<dyn std::error::Error>>{
