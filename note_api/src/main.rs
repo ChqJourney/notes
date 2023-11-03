@@ -46,6 +46,7 @@ async fn main() {
             std::process::exit(1);
         }
     };
+    
     // let dd=rolling::hourly("");
     // log setting in production
     #[cfg(not(debug_assertions))]

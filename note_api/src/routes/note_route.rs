@@ -6,14 +6,14 @@ use axum_valid::Garde;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, utils::{auth, AuthMiddleWare}, models::{Note, DeleteModel, QueryModel, NewNoteModel}};
+use crate::{AppState, utils::{auth_common, AuthMiddleWare}, models::{Note, DeleteModel, QueryModel, NewNoteModel}};
 
 pub fn note_routes(app_state:AppState)->Router<AppState>{
     Router::new().route("/biz/note",post(create_note))
                     .route("/biz/note", put(update_note))
                     .route("/biz/note",delete(delete_notes))
                     .route("/biz/note", get(query_notes))
-    .route_layer(middleware::from_fn_with_state(app_state, auth))
+    .route_layer(middleware::from_fn_with_state(app_state, auth_common))
 }
 
 

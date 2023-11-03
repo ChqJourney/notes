@@ -22,13 +22,10 @@ pub struct AuthMiddleWare {
     pub claims: Value,
 }
 
-pub async fn auth<B>(
+pub async fn auth_common<B>(
     // run the `TypedHeader` extractor
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     State(data): State<AppState>,
-    // you can also add more extractors here but the last
-    // extractor must implement `FromRequest` which
-    // `Request` does
     mut request: Request<B>,
     next: Next<B>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<Value>)> {
@@ -63,4 +60,46 @@ pub async fn auth<B>(
     }
 }
 
+pub async fn auth_admin<B>(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    State(data): State<AppState>,
+    mut request: Request<B>,
+    next: Next<B>,
+)-> Result<impl IntoResponse, (StatusCode, Json<Value>)>{
+    let validation_result =
+        decode_token(auth.token().to_string(), data.inner.env.secret_key)
+            .map_err(|e| {
+            let error_response = json!( {
+                "status": "fail",
+                "message": "You are not logged in, please provide token".to_string(),
+            });
+            (StatusCode::UNAUTHORIZED, Json(error_response)).into_response()
+        });
+    let token_validate_result = validation_result.map_err(|e| {
+        let error_response = json!( {
+            "status": "fail",
+            "message": "You are not logged in, please provide token".to_string(),
+        });
+        (StatusCode::UNAUTHORIZED, Json(error_response)).into_response()
+    });
+    if token_validate_result.is_ok(){
 
+        let token_data = token_validate_result.unwrap().claims;
+        let r=token_data.get("admin");
+        println!("{:#?}",r);
+        if token_data.get("admin").is_none(){
+            return Err((StatusCode::UNAUTHORIZED,Json(json!({}))))
+        }else{
+
+            request.extensions_mut().insert(AuthMiddleWare {
+                user_id: token_data["sub"].as_str().unwrap().to_owned(),
+                email: token_data["email"].as_str().unwrap().to_owned(),
+                claims: token_data,
+            });
+        }
+        
+        Ok(next.run(request).await)
+    }else{
+        Err((StatusCode::UNAUTHORIZED,Json(json!({}))))
+    }
+}
