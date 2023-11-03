@@ -39,7 +39,7 @@ async fn register(
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let exists = sqlx::query_as::<_, User>("select * from users where email=$1 and is_deleted=0")
         .bind(register_model.email.clone())
-        .fetch_one(&data.inner.db)
+        .fetch_one(&*data.inner.db)
         .await;
     if exists.is_ok() {
         let error_response = serde_json::json!({
@@ -57,7 +57,7 @@ async fn register(
     .bind(register_model.email)
     .bind(pwd_hash)
     .bind(Uuid::new_v4().to_string())
-    .execute(&data.inner.db)
+    .execute(&*data.inner.db)
     .await
     .map_err(|e| {
         let error_response = serde_json::json!({
@@ -100,7 +100,7 @@ async fn login(
 
 async fn refresh(State(data): State<AppState>,
 Json(refresh_model): Json<RefreshModel>,)->Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    let token_data=decode_token(refresh_model.refresh_token, data.clone().inner.env.secret_key)
+    let token_data=decode_token(refresh_model.refresh_token, data.inner.env.secret_key.clone())
         .map_err(|e|{
             let error_response = serde_json::json!({
                 "status": "fail",
@@ -132,7 +132,7 @@ async fn create_tokens(state:AppState,user_id:String,email:String)->Result<Value
         println!("{:#?}",at_token_result);
     let rt_claims_result = create_rt_claims(user_id,email,state.inner.env.refresh_expires_in)
         .await?;
-    let rt_token_result = generate_token(rt_claims_result, state.inner.env.secret_key)?;
+    let rt_token_result = generate_token(rt_claims_result, state.inner.env.secret_key.clone())?;
         Ok(json!({
             "type":"Bearer",
             "access_token":at_token_result,

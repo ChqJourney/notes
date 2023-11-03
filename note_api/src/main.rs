@@ -24,8 +24,8 @@ pub struct AppState{
 
 #[derive(Debug, Clone)]
 pub struct InnerState {
-    db: Pool<Sqlite>,
-    env: Config,
+    db: Arc<Pool<Sqlite>>,
+    env: Arc<Config>,
     
 }
 #[tokio::main]
@@ -77,7 +77,7 @@ async fn main() {
         .init();
 
     // app router with layers created
-    let app = create_app(AppState { inner: InnerState { db: pool, env: config }, without_validation_arguments: () });
+    let app = create_app(AppState { inner: InnerState { db: Arc::new(pool), env: Arc::new(config) }, without_validation_arguments: () });
 
     // app serve at:
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));

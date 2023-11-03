@@ -18,7 +18,7 @@ async fn user_info(
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let user=sqlx::query_as::<_,User>("select * from users where id=$1 and is_deleted=0")
         .bind(token_info.user_id.clone())
-        .fetch_one(&data.inner.db).await
+        .fetch_one(&*data.inner.db).await
         .map_err(|e|{
             let error_response = serde_json::json!({
                 "status": "fail",
@@ -27,7 +27,7 @@ async fn user_info(
             (StatusCode::INTERNAL_SERVER_ERROR, Json(error_response))
         })?;
         let custom_claims=sqlx::query_as::<_,ClaimKV>("select * from userclaims where user_id=$1")
-            .bind(token_info.user_id).fetch_all(&data.inner.db)
+            .bind(token_info.user_id).fetch_all(&*data.inner.db)
             .await.map_err(|e|{
                 let error_response = serde_json::json!({
                     "status": "fail",

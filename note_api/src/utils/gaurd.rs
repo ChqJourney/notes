@@ -30,7 +30,7 @@ pub async fn auth_common<B>(
     next: Next<B>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<Value>)> {
     let validation_result =
-        decode_token(auth.token().to_string(), data.inner.env.secret_key)
+        decode_token(auth.token().to_string(), data.inner.env.secret_key.clone())
             .map_err(|e| {
             let error_response = json!( {
                 "status": "fail",
@@ -67,7 +67,7 @@ pub async fn auth_admin<B>(
     next: Next<B>,
 )-> Result<impl IntoResponse, (StatusCode, Json<Value>)>{
     let validation_result =
-        decode_token(auth.token().to_string(), data.inner.env.secret_key)
+        decode_token(auth.token().to_string(), data.inner.env.secret_key.clone())
             .map_err(|e| {
             let error_response = json!( {
                 "status": "fail",
