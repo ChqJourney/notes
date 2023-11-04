@@ -12,9 +12,11 @@ pub fn create_app(app_state:AppState)->Router{
     Router::new()
     .merge(routes::note_routes(app_state.clone()))
     .merge(routes::account_routes(app_state.clone()))
+    .merge(routes::file_routes(app_state.clone()))
     .merge(routes::user_routes())
     .with_state(app_state)
         .nest_service("/static", ServeDir::new("static"))
+        .nest_service("/uploads", ServeDir::new("uploads"))
         .layer(
             ServiceBuilder::new()
                 // handle error outside routes
