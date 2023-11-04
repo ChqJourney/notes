@@ -18,20 +18,21 @@ async fn upload_file(
     Extension(token_info):Extension<AuthMiddleWare>,
     mut multipart: Multipart
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    println!("{:#?}",multipart);
+    // println!("{:#?}",multipart);
+    let mut path=String::new();
     if let Some(data)=multipart.next_field().await.unwrap(){
 
         let name = data.name().unwrap().to_string();
         let data = data.bytes().await.unwrap();
-        let path=create_absolute_path(name, token_info.user_id);
-        println!("{}",path);
-        fs::write(path, data).await
+        path=create_absolute_path(name, token_info.user_id);
+        // println!("{}",path);
+        fs::write(path.clone(), data).await
         .map_err(|e|{
             create_err_response(e)
         })?;
     }
-    
-    Ok((StatusCode::OK,Json({})).into_response())
+    let ab_path=format!("https://www.photonee.com/api/{}",path);
+    Ok((StatusCode::OK,Json(json!({"path":ab_path}))).into_response())
 }
 
 fn create_absolute_path(file_name:String,user_id:String)->String{
