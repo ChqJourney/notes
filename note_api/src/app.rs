@@ -16,7 +16,7 @@ pub fn create_app(app_state:AppState)->Router{
     .merge(routes::user_routes())
     .with_state(app_state)
         .nest_service("/static", ServeDir::new("static"))
-        .nest_service("/uploads", get(static_handler))
+        .nest_service("/uploads", ServeDir::new("uploads"))
         .layer(
             ServiceBuilder::new()
                 // handle error outside routes
