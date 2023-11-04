@@ -1,8 +1,8 @@
 use std::{time::Duration, sync::Arc};
 
-use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method}, body::Body, response::Response, BoxError, middleware};
+use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method, Uri}, body::{Body, BoxBody, boxed}, response::Response, BoxError, middleware, routing::get};
 use axum_trace_id::SetTraceIdLayer;
-use tower::ServiceBuilder;
+use tower::{ServiceBuilder, ServiceExt};
 use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer, cors::CorsLayer};
 use tracing::Span;
 
@@ -16,7 +16,7 @@ pub fn create_app(app_state:AppState)->Router{
     .merge(routes::user_routes())
     .with_state(app_state)
         .nest_service("/static", ServeDir::new("static"))
-        .nest_service("/uploads", ServeDir::new("uploads"))
+        .nest_service("/uploads", get(static_handler))
         .layer(
             ServiceBuilder::new()
                 // handle error outside routes
@@ -94,5 +94,35 @@ async fn handle_global_error(err: BoxError) -> (StatusCode, String) {
             StatusCode::INTERNAL_SERVER_ERROR,
             format!("Unhandled internal error: {}", err),
         )
+    }
+}
+
+
+async fn static_handler(uri: Uri) -> Result<Response<BoxBody>, (StatusCode, String)> {
+    let res = get_static_file(uri.clone()).await?;
+
+    if res.status() == StatusCode::NOT_FOUND {
+        // try with `.html`
+        // TODO: handle if the Uri has query parameters
+        match format!("{}.html", uri).parse() {
+            Ok(uri_html) => get_static_file(uri_html).await,
+            Err(_) => Err((StatusCode::INTERNAL_SERVER_ERROR, "Invalid URI".to_string())),
+        }
+    } else {
+        Ok(res)
+    }
+}
+
+async fn get_static_file(uri: Uri) -> Result<Response<BoxBody>, (StatusCode, String)> {
+
+    let req = Request::builder().uri(uri).body(Body::empty()).unwrap();
+
+    // `ServeDir` implements `tower::Service` so we can call it with `tower::ServiceExt::oneshot`
+    match ServeDir::new(".").oneshot(req).await {
+        Ok(res) => Ok(res.map(boxed)),
+        Err(err) => Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Something went wrong: {}", err),
+        )),
     }
 }
