@@ -6,14 +6,14 @@ use axum_valid::Garde;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, utils::{auth, AuthMiddleWare}, models::{Note, DeleteModel, QueryModel, NewNoteModel}};
+use crate::{AppState, utils::{auth_common, AuthMiddleWare}, models::{Note, DeleteModel, QueryModel, NewNoteModel}};
 
 pub fn note_routes(app_state:AppState)->Router<AppState>{
     Router::new().route("/biz/note",post(create_note))
                     .route("/biz/note", put(update_note))
                     .route("/biz/note",delete(delete_notes))
                     .route("/biz/note", get(query_notes))
-    .route_layer(middleware::from_fn_with_state(app_state, auth))
+    .route_layer(middleware::from_fn_with_state(app_state, auth_common))
 }
 
 
@@ -29,7 +29,7 @@ async fn create_note(
         .bind(note_model.html_content)
         .bind(note_model.text_content)
         .bind(token_info.email)
-        .execute(&state.inner.db)
+        .execute(&*state.inner.db)
         .await
         .map_err(|e|{
             let error_response = serde_json::json!({
@@ -59,7 +59,7 @@ async fn update_note(
         .bind(note.text_content)
         .bind(token_info.email)
         .bind(note.id)
-        .execute(&state.inner.db).await
+        .execute(&*state.inner.db).await
         .map_err(|e|{
             let error_response = serde_json::json!({
                 "status": "fail",
@@ -103,7 +103,7 @@ pub async fn query_notes(State(state):State<AppState>,
             }
             
             let query_result=sqlx::query_as::<_,Note>(&final_sql)
-                .fetch_all(&state.inner.db)
+                .fetch_all(&*state.inner.db)
                 .await.map_err(|e|{
                     let error_response = serde_json::json!({
                         "status": "fail",
@@ -126,7 +126,7 @@ pub async fn delete_notes(State(state):State<AppState>,
             }
         let delete_result=sqlx::query(&sql)
             .bind(delete_model.note_id)
-            .execute(&state.inner.db).await
+            .execute(&*state.inner.db).await
             .map_err(|e|{
                 let error_response = serde_json::json!({
                     "status": "fail",

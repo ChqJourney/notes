@@ -26,12 +26,12 @@ pub fn verifiy_hashpwd(password:String,hashpwd:String)->bool{
     };
     is_valid
 }
-#[derive(Serialize,Deserialize,Debug,Validate,FromRow)]
+#[derive(Serialize,Deserialize,Debug,Clone,Validate,FromRow)]
 pub struct ClaimKV{
     #[garde(skip)]
-    claim_type:String,
+    pub claim_type:String,
     #[garde(skip)]
-    claim_value:String
+    pub claim_value:String
 }
 pub async fn create_at_claims(user_id:String,email:String,pool:&Pool<Sqlite>,expires_in_minutes:i64)->Result<Value,Box<dyn std::error::Error>>{
     let now = chrono::Utc::now();
