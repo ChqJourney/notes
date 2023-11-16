@@ -1,6 +1,5 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import { defaultEditStatus } from './editor';
     import { isActive } from '@tiptap/core';
     export let editor
     let currentEditStatus='paragraph'

@@ -53,16 +53,6 @@ import Image from '@tiptap/extension-image'
 </script>
 
 {#if editor}
-<Float {editor}>
-  <Toolbar
-   {editor}
-   on:swith_in={(e) => {
-    switch (e.detail.type) {
-      case "ful":
-        editor.chain().focus().setBulletList().run();
-        break;}}}
-   />
-</Float>
   <Bubble {editor}>
     <Toolbar
       {editor}
