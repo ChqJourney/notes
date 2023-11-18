@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3000 --no-cors",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -27,6 +27,8 @@
     "@tiptap/extension-image": "^2.1.12",
     "@tiptap/extension-underline": "^2.1.12",
     "@tiptap/pm": "^2.1.12",
-    "@tiptap/starter-kit": "^2.1.12"
+    "@tiptap/starter-kit": "^2.1.12",
+    "jwt-decode": "^4.0.0",
+    "svelte-router-spa": "^7.0.1"
   }
 }

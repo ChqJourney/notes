@@ -1,11 +1,12 @@
 <script>
-    import Editor from "./lib/editor/Editor.svelte";
-  import logo from './assets/svelte.svg'
-    import Auth from "./lib/nav/auth.svelte";
-
+  import { Router } from 'svelte-router-spa'
+  import { routes } from './routes'
 </script>
 
-<div class="flex justify-between">
+<Router {routes} />
+
+
+<!-- <div class="flex justify-between">
   <img width="40" src={logo} alt="logo"/>
   <Auth/>
 </div>
@@ -13,7 +14,7 @@
 <main>
   
   <Editor/>
-</main>
+</main> -->
 
 <style>
   hr {

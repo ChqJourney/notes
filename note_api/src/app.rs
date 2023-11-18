@@ -68,7 +68,7 @@ pub fn create_app(app_state:AppState)->Router{
                 )
                 .layer(CorsLayer::new()
                 .allow_origin([
-                    "http://localhost:3000".parse::<HeaderValue>().unwrap(),
+                    "http://localhost:5173".parse::<HeaderValue>().unwrap(),
                     "http://www.photonee.com".parse::<HeaderValue>().unwrap(),
                     "http://www.onebitai.com".parse::<HeaderValue>().unwrap(),
                     ])
