@@ -1,9 +1,9 @@
 use std::{time::Duration, sync::Arc};
 
-use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method, Uri}, body::{Body, BoxBody, boxed}, response::Response, BoxError, middleware, routing::get};
+use axum::{Router, error_handling::HandleErrorLayer, http::{Request, HeaderName, StatusCode, HeaderValue, Method, Uri, header::{AUTHORIZATION, ACCEPT, CONTENT_TYPE, ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_METHODS, ACCESS_CONTROL_ALLOW_ORIGIN}}, body::{Body, BoxBody, boxed}, response::Response, BoxError, middleware, routing::get};
 use axum_trace_id::SetTraceIdLayer;
 use tower::{ServiceBuilder, ServiceExt};
-use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer, cors::CorsLayer};
+use tower_http::{services::ServeDir, trace::TraceLayer, classify::ServerErrorsFailureClass, propagate_header::PropagateHeaderLayer, cors::{CorsLayer, Any}};
 use tracing::Span;
 
 use crate::{routes, utils::auth_common, AppState};
@@ -50,15 +50,27 @@ pub fn create_app(app_state:AppState)->Router{
                         })
                         .on_response(|response: &Response<_>, latency: Duration, _span: &Span| {
                             // println!("{:#?}",response);
-                            let request_id = response.headers().get("x-request-id").unwrap();
-                            
+                            let request_id = response.headers().get("x-request-id");
+                            match request_id {
+                                Some(id)=>{
+                                    tracing::info!(
+                                        "response to {:?} status code {} generated in {:?}",
+                                        request_id,
+                                        response.status(),
+                                        latency
+                                    )
+                                },
+                                None=>{
+                                    tracing::info!(
+                                        "response to {:?} status code {} generated in {:?}",
+                                        "no id",
+                                        response.status(),
+                                        latency
+                                    )
+                                }
+                            }
                             // println!("id:{:#?}",request_id);
-                            tracing::info!(
-                                "response to {:?} status code {} generated in {:?}",
-                                request_id,
-                                response.status(),
-                                latency
-                            )
+                            
                         })
                         .on_failure(
                             |error: ServerErrorsFailureClass, _latency: Duration, _span: &Span| {
@@ -66,15 +78,10 @@ pub fn create_app(app_state:AppState)->Router{
                             },
                         ),
                 )
-                // .layer(CorsLayer::new()
-                // .allow_origin([
-                //     "http://localhost:3000".parse::<HeaderValue>().unwrap(),
-                //     "http://localhost:5173".parse::<HeaderValue>().unwrap(),
-                //     "http://www.photonee.com".parse::<HeaderValue>().unwrap(),
-                //     "http://www.onebitai.com".parse::<HeaderValue>().unwrap(),
-                //     ])
-                // .allow_methods([Method::GET,Method::POST,Method::DELETE,Method::PATCH,Method::PUT,Method::OPTIONS])
-                // )
+                .layer(CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods([Method::GET,Method::POST,Method::DELETE,Method::PATCH,Method::PUT,Method::OPTIONS])
+                .allow_headers(Any))
                 // timeout layer,more than 10sec error
                 .timeout(Duration::from_secs(10))
                 // copy request id to response

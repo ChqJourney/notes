@@ -8,6 +8,7 @@ window.fetch = async (...args) => {
   // request interceptor
   
   const token_str=localStorage.getItem("user");
+  console.log(token_str)
   if(token_str){
     const user=JSON.parse(token_str);
     const {type,access_token,refresh_token,expires_in}=user;
@@ -24,7 +25,7 @@ window.fetch = async (...args) => {
       })
       if(response.ok){
         let new_token_info=await response.json()
-        localStorage.setItem("user",new_token_info)
+        localStorage.setItem("user",JSON.stringify(new_token_info))
         const {type,access_token,refresh_token,expires_in}=new_token_info;
         config.headers={...config.headers,"Authorization":`${type} ${access_token}`}
       }

@@ -68,7 +68,7 @@
           <div>
             <button type="submit" on:click={async(e)=>{
               e.preventDefault()
-              const response=await fetch("https://www.photonee.com/api/identity/register",{
+              const response=await fetch("http://127.0.0.1:3000/identity/login",{
                 method: 'POST',
                     headers: {
                         'content-type': 'application/json',
@@ -77,7 +77,7 @@
               });
               let res=await response.json();
               console.log(res);
-              localStorage.setItem("user",res);
+              localStorage.setItem("user",JSON.stringify(res));
               getUser()
               navigateTo("/");
             }} class="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Sign in</button>
