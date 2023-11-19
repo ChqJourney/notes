@@ -10,7 +10,7 @@
                     method: 'GET',
                     headers: {
                         'X-RapidAPI-Host': 'random-words5.p.rapidapi.com',
-                    },
+                    }
                     // body:JSON.stringify({"dafa":"daf"})
                 })
     }

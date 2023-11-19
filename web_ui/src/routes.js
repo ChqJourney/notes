@@ -16,10 +16,10 @@ const routes = [
     name: '/',
     component: Index,
     layout:TopLayout,
-    // onlyIf: { guard: userIsAdmin, redirect: '/login' },
-    // nestedRoutes:[
+    onlyIf: { guard: userIsAdmin, redirect: '/login' },
+    nestedRoutes:[
 
-    // ]
+    ]
   },
   { name: 'login', component: Login, layout: TopLayout },
   

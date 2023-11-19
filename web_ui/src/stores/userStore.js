@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 
 export const userStore=writable({isAuthenticated:false,userInfo:undefined})
 
-export const getUser=userStore.update(val=>{
+export const getUser=()=>userStore.update(val=>{
     const str=localStorage.getItem("user");
     if(!str){
         val.isAuthenticated=false;
