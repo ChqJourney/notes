@@ -1,16 +1,16 @@
 <script>
-
-    let isAuthenticated=false;
-    let userInfo=undefined;
+    import {navigateTo} from "svelte-router-spa";
+    import {userStore} from "../../stores/userStore"
+    console.log($userStore)
 </script>
 
 <div>
-    {#if isAuthenticated}
-        <a href="#">{userInfo?.email??"error"}</a>
+    {#if $userStore.isAuthenticated}
+        <a href="#">{$userStore.userInfo?.email??"error"}</a>
     {:else}
     <div class="flex gap-2">
-        <a href="#" class="hover:bg-slate-400 hover:text-lime-300 hover:scale-105 px-2 py-1 rounded-md">Register</a>
-        <a href="#" class="hover:bg-slate-400 hover:text-lime-300 hover:scale-105 px-2 py-1 rounded-md">Login</a>
+        <a href="#" on:click={()=>navigateTo("/register")} class="hover:bg-slate-400 hover:text-lime-300 hover:scale-105 px-2 py-1 rounded-md">Register</a>
+        <a href="#" on:click={()=>navigateTo("/login")} class="hover:bg-slate-400 hover:text-lime-300 hover:scale-105 px-2 py-1 rounded-md">Login</a>
     </div>
     {/if}
 </div>

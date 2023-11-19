@@ -6,15 +6,6 @@
 <Router {routes} />
 
 
-<!-- <div class="flex justify-between">
-  <img width="40" src={logo} alt="logo"/>
-  <Auth/>
-</div>
-<hr>
-<main>
-  
-  <Editor/>
-</main> -->
 
 <style>
   hr {

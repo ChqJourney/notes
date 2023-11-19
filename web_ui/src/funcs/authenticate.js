@@ -4,6 +4,7 @@ export const decode=(token)=>{
     try{
 
         const info=jwtDecode(token);
+        console.log(info)
         return info;
     }catch(ex){
         return "";
@@ -11,5 +12,9 @@ export const decode=(token)=>{
 }
 
 export const isExpired=(info,liveTime)=>{
-    return (Date.now()/1000-info.exp)-liveTime>0;
+    console.log(info.exp)
+    console.log(Date.now()/1000)
+    let result=liveTime-(Date.now()/1000-info.exp)
+    console.log(result)
+    return result>0;
 }

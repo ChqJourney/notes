@@ -68,12 +68,12 @@
           <div>
             <button type="submit" on:click={async(e)=>{
               e.preventDefault()
-              const response=await fetch("http://127.0.0.1:3000/identity/login",{
+              const response=await fetch("https://www.photonee.com/api/identity/login",{
                 method: 'POST',
                     headers: {
                         'content-type': 'application/json',
                     },
-                    body:JSON.stringify({email:email,password:password,user_name:email})
+                    body:JSON.stringify({email:email,password:password})
               });
               let res=await response.json();
               console.log(res);
@@ -87,8 +87,8 @@
         <div class="mt-6">
           
   
-          <div class="mt-6 grid grid-cols-3 gap-3">
-            
+          <div class="mt-6 flex justify-center font-medium text-emerald-600 hover:text-emerald-700">
+             <a href="#" on:click={()=>navigateTo("/register")} class="hover:scale-105 underline ">register a new account</a>
           </div>
         </div>
       </div>

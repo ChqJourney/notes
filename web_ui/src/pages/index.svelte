@@ -1,6 +1,7 @@
 
 <script>
     import { decode, isExpired } from "../funcs/authenticate";
+    import Editor from "../lib/editor/Editor.svelte";
 
     let token=""
     let info
@@ -16,6 +17,4 @@
     }
 </script>
 
-
-<div>index</div>
-<button class="bg-slate-300 w-24 h-8 rounded-md" on:click={send}>Send</button>
+<Editor/>

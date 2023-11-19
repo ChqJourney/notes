@@ -1,13 +1,14 @@
 import Login from "./pages/auth/login.svelte"
+import Register from "./pages/auth/register.svelte"
 import Index from "./pages/index.svelte"
 import TopLayout from "./pages/layouts/TopLayout.svelte"
+import UserLayout from "./pages/layouts/UserLayout.svelte"
+import { getUser, checkAndRefreshAuthState, userStore } from "./stores/userStore"
 
-
+let is_authed=false;
 function userIsAdmin() {
-    let str=localStorage.getItem("user")
-    if(!str){return false}else{
-        let user=JSON.parse(str)
-    }
+    getUser()
+    userStore.subscribe(val=>is_authed=val.isAuthenticated)
   //check if user is admin and returns true or false
 }
 
@@ -15,14 +16,14 @@ const routes = [
   {
     name: '/',
     component: Index,
-    layout:TopLayout,
-    onlyIf: { guard: userIsAdmin, redirect: '/login' },
+    layout:UserLayout,
+    onlyIf: { guard: checkAndRefreshAuthState, redirect: '/login' },
     nestedRoutes:[
 
     ]
   },
   { name: 'login', component: Login, layout: TopLayout },
-  
+  {name:"register",component:Register,layout:TopLayout},
 ]
 
 export { routes }
