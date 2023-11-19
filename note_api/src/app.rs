@@ -66,15 +66,15 @@ pub fn create_app(app_state:AppState)->Router{
                             },
                         ),
                 )
-                .layer(CorsLayer::new()
-                .allow_origin([
-                    "http://localhost:3000".parse::<HeaderValue>().unwrap(),
-                    "http://localhost:5173".parse::<HeaderValue>().unwrap(),
-                    "http://www.photonee.com".parse::<HeaderValue>().unwrap(),
-                    "http://www.onebitai.com".parse::<HeaderValue>().unwrap(),
-                    ])
-                .allow_methods([Method::GET,Method::POST,Method::DELETE,Method::PATCH,Method::PUT,Method::OPTIONS])
-                )
+                // .layer(CorsLayer::new()
+                // .allow_origin([
+                //     "http://localhost:3000".parse::<HeaderValue>().unwrap(),
+                //     "http://localhost:5173".parse::<HeaderValue>().unwrap(),
+                //     "http://www.photonee.com".parse::<HeaderValue>().unwrap(),
+                //     "http://www.onebitai.com".parse::<HeaderValue>().unwrap(),
+                //     ])
+                // .allow_methods([Method::GET,Method::POST,Method::DELETE,Method::PATCH,Method::PUT,Method::OPTIONS])
+                // )
                 // timeout layer,more than 10sec error
                 .timeout(Duration::from_secs(10))
                 // copy request id to response
