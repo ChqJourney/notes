@@ -1,6 +1,6 @@
 
 <script>
-    import { decode, isExpired } from "../funcs/authenticate";
+    import { decode, isValid } from "../funcs/authenticate";
     import Editor from "../lib/editor/Editor.svelte";
 
     let token=""
@@ -17,4 +17,7 @@
     }
 </script>
 
-<Editor/>
+<div class="p-4">
+    
+    <Editor/>
+</div>

@@ -1,6 +1,6 @@
 import "./app.postcss";
 import App from "./App.svelte";
-import { isExpired } from "./funcs/authenticate";
+import { isValid } from "./funcs/authenticate";
 
 const { fetch: originalFetch } = window;
 window.fetch = async (...args) => {
@@ -12,8 +12,8 @@ window.fetch = async (...args) => {
   if(token_str){
     const user=JSON.parse(token_str);
     const {type,access_token,refresh_token,expires_in}=user;
-    const is_at_expired=isExpired(user,3600);
-    const is_rt_expired=isExpired(user,3600*12);
+    const is_at_expired=isValid(user,3600);
+    const is_rt_expired=isValid(user,3600*12);
     if(!is_at_expired){
 
       config.headers={...config.headers,"Authorization":`${type} ${access_token}`}

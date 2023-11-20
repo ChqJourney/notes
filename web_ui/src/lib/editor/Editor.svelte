@@ -7,10 +7,12 @@
   import Bubble from "./Bubble.svelte";
   import Float from "./Float.svelte";
   import Image from "@tiptap/extension-image";
+  import { editorTickStore, reset, tick } from "./editorStore";
 
   let editor;
   let element;
   let a_token;
+  let interval;
   onMount(() => {
     editor = new Editor({
       element: element,
@@ -25,6 +27,43 @@
         }),
       ],
       content: "",
+      onCreate({editor}){
+        setTimeout(async()=>{
+          let res=await fetch("https://www.photonee.com/api/biz/note",{
+              method:"POST",
+              body:JSON.stringify({
+                title:"",
+                html_content:"",
+                text_content:"",
+              })
+            })
+            console.log(await res.json())
+        },1000)
+        
+      },
+      onUpdate({ editor }) {
+        reset();
+        clearInterval(interval);
+        interval = setInterval(() => {
+          tick(async() => {
+            let res=await fetch("https://www.photonee.com/api/biz/note",{
+              method:"PUT",
+              body:JSON.stringify({
+                id:"",
+                title:"",
+                html_content:"",
+                text_content:"",
+                email:"",
+              })
+            })
+            console.log(await res.json())
+            clearInterval(interval);
+          });
+        }, 1000);
+      },
+      onDestroy({}) {
+        clearInterval(interval);
+      },
       editorProps: {
         handleDrop: function (view, event, slice, moved) {
           if (

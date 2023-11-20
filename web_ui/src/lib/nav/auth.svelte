@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
     import {navigateTo} from "svelte-router-spa";
     import {userStore} from "../../stores/userStore"
     console.log($userStore)

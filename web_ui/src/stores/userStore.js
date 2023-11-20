@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { decode, isExpired } from "../funcs/authenticate";
+import { decode, isValid } from "../funcs/authenticate";
 
 export const userStore = writable({ isAuthenticated: false, userInfo: undefined })
 
@@ -26,12 +26,13 @@ export const checkAndRefreshAuthState = () => {
     } else {
         const user = JSON.parse(str);
         const info = decode(user.access_token)
-        const is_exp = isExpired(info, 3600 * 1000)
+        const is_exp = isValid(info, 3600 * 1000)
         if (is_exp) {
-            userStore.update(val => { val.isAuthenticated = true; val.userInfo = { ...user }; return val; })
+            userStore.update(val => { val.isAuthenticated = true; val.userInfo = { ...info }; return val; })
         } else {
             userStore.update(val => { val.isAuthenticated = false; val.userInfo = undefined; return val; })
         }
+        console.log(is_exp)
         return is_exp
     }
 }

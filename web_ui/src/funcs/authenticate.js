@@ -11,7 +11,7 @@ export const decode=(token)=>{
     }
 }
 
-export const isExpired=(info,liveTime)=>{
+export const isValid=(info,liveTime)=>{
     console.log(info.exp)
     console.log(Date.now()/1000)
     let result=liveTime-(Date.now()/1000-info.exp)

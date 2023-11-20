@@ -1,5 +1,7 @@
 <script>
+    // @ts-ignore
     import { getUser } from "../../stores/userStore";
+    // @ts-ignore
     import {navigateTo} from "svelte-router-spa"
  let email;
  let password
