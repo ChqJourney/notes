@@ -1,5 +1,6 @@
 import Login from "./pages/auth/login.svelte"
 import Register from "./pages/auth/register.svelte"
+import Board from "./pages/board/board.svelte"
 import Index from "./pages/index.svelte"
 import TopLayout from "./pages/layouts/TopLayout.svelte"
 import UserLayout from "./pages/layouts/UserLayout.svelte"
@@ -21,6 +22,12 @@ const routes = [
     nestedRoutes:[
 
     ]
+  },
+  {
+    name:'/board',
+    component:Board,
+    layout:UserLayout,
+    onlyIf: { guard: checkAndRefreshAuthState, redirect: '/login' },
   },
   { name: 'login', component: Login, layout: TopLayout },
   {name:"register",component:Register,layout:TopLayout},

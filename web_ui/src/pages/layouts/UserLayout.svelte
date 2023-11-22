@@ -12,12 +12,12 @@
 
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between px-4 pt-2">
     <img width="40" src={logo} alt="logo" />
     <div>{$editorTickStore}</div>
     <Auth />
 </div>
 <!-- <hr /> -->
-<main>
+<main class="">
     <Route {currentRoute} {params} />
 </main>

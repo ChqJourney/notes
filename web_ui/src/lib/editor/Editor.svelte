@@ -8,12 +8,16 @@
   import Float from "./Float.svelte";
   import Image from "@tiptap/extension-image";
   import { editorTickStore, reset, tick } from "./editorStore";
-
+  
+  export let id="",title="", htmlConent="",textContent="";
   let editor;
   let element;
   let a_token;
   let interval;
+  let to_be_saved_Note;
+  const setImage=(url)=>editor.commands.setImage({src:url});
   onMount(() => {
+    to_be_saved_Note={id:id,title:"",htmlConent:htmlConent,textContent:textContent}
     editor = new Editor({
       element: element,
       extensions: [
@@ -26,40 +30,46 @@
           element: document.querySelector("#floating-menu"),
         }),
       ],
-      content: "",
+      content: htmlConent,
       onCreate({editor}){
-        setTimeout(async()=>{
-          let res=await fetch("https://www.photonee.com/api/biz/note",{
+        if(id===""){
+          setTimeout(async()=>{
+            let res=await fetch("https://www.photonee.com/api/biz/note",{
               method:"POST",
               body:JSON.stringify({
-                title:"",
-                html_content:"",
-                text_content:"",
+                title:title,
+                html_content:editor.getHTML(),
+                text_content:editor.getText(),
               })
             })
-            console.log(await res.json())
-        },1000)
-        
+            let return_id=await res.json()
+            to_be_saved_Note.id=return_id;
+          },1000)
+
+        }
       },
       onUpdate({ editor }) {
+        
         reset();
         clearInterval(interval);
         interval = setInterval(() => {
-          tick(async() => {
-            let res=await fetch("https://www.photonee.com/api/biz/note",{
-              method:"PUT",
-              body:JSON.stringify({
-                id:"",
-                title:"",
-                html_content:"",
-                text_content:"",
-                email:"",
-              })
-            })
-            console.log(await res.json())
-            clearInterval(interval);
-          });
-        }, 1000);
+          to_be_saved_Note.html_content=editor.getHTML()
+          to_be_saved_Note.text_content=editor.getText()
+            tick(async() => {
+              try{
+                let res=await fetch("https://www.photonee.com/api/biz/note",{
+                  method:"PUT",
+                  body:JSON.stringify(to_be_saved_Note)
+                })
+              }catch(ex){
+                console.log(ex)
+              }
+              // console.log(await res.json())
+              clearInterval(interval);
+            });
+          
+          }, 1000);
+   
       },
       onDestroy({}) {
         clearInterval(interval);
@@ -85,12 +95,16 @@
               body: formData,
             })
               .then((data) => {
-                console.log(data.json());
+                data.json().then(res=>{
+                  console.log(res)
+                  setImage(res.path)
+                });
+                //todo: insert pic url to content
               })
               .catch((error) => {
                 console.log(error);
               });
-            console.log(event.dataTransfer.files[0]);
+            // console.log(event.dataTransfer.files[0]);
             return true; // handled
           }
           return false;
@@ -136,7 +150,7 @@
 </script>
 
 <div class="w-full h-[800px] border rounded-md">
-  <input
+  <input on:change={e=>to_be_saved_Note.title=e.target.value}
     type="text"
     id="large-input"
     class="block w-full p-4 text-gray-900 border-0 bg-transparent text-2xl font-semibold focus:outline-none focus:ring-0 dark:text-white"

@@ -7,10 +7,4 @@
 
 <Router {routes} />
 
-<style>
-  hr {
-      margin: 1rem;
-      border: none;
-      border-top: 0.5px solid #ccc;
-    }
-</style>
+
