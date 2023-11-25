@@ -1,5 +1,5 @@
 <script>
-    import { notes } from "../../lib/notes/noteStore";
+    import { notes, selectNote } from "../../lib/notes/noteStore";
     export let note;
 
 
@@ -7,6 +7,7 @@
 
     function handleMouseDown(event) {
         event.stopPropagation()
+        selectNote(note.id)
         startX = event.clientX;
         startY = event.clientY;
         initialX = note.x;
@@ -37,7 +38,7 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="note w-48 h-48 dark:text-white border border-red-800 text-red-900" style="left: {note.x}px; top: {note.y}px;" on:mousedown={handleMouseDown}>
+<div class={`note w-48 h-48 dark:text-white border ${note.isSelected?"border-blue-800":"border-red-800"} text-red-900`} style="left: {note.x}px; top: {note.y}px;" on:mousedown={handleMouseDown}>
     {note.content}
 </div>
 

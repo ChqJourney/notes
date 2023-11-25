@@ -1,68 +1,90 @@
 <script>
     import Note from "../../lib/notes/note.svelte";
     import { notes } from "../../lib/notes/noteStore";
-  
-  
+
     let scale = 1;
-    let panning=false;
+    let panning = false;
     let boardRect = { x: 0, y: 0 };
-    let startX,startY;
-    let translateX=0,translateY=0;
-  
+    let startX, startY;
+    let translateX = 0,
+        translateY = 0;
+
     function handleWheel(event) {
-        const rect = event.currentTarget.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left; // x position within the element
-      const mouseY = event.clientY - rect.top;  // y position within the element
-  
-      const oldScale = scale;
-      if (event.deltaY < 0) {
-        scale *= 1.1;
-      } else {
-        scale /= 1.1;
-      }
-  
-      // Adjust the translation based on the new scale
-      translateX -= (mouseX - boardRect.x) * (scale - oldScale);
-      translateY -= (mouseY - boardRect.y) * (scale - oldScale);
+        event.stopPropagation();
+        if (event.altKey) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left; // x position within the element
+            const mouseY = event.clientY - rect.top; // y position within the element
+
+            const oldScale = scale;
+            if (event.deltaY < 0) {
+                scale *= 1.05;
+            } else {
+                scale /= 1.05;
+            }
+
+            // Adjust the translation based on the new scale
+            const tempX =
+                translateX - (mouseX - boardRect.x) * (scale - oldScale);
+            const tempY =
+                translateY - (mouseY - boardRect.y) * (scale - oldScale);
+            if (tempX <= 0) {
+                translateX = tempX;
+            }
+            if (tempY <= 0) {
+                translateY = tempY;
+            }
+
+            event.preventDefault();
+        }
     }
     function startPan(event) {
-      panning = true;
-      startX = event.clientX - translateX;
-      startY = event.clientY - translateY;
+        console.log(event.clientX, event.clientY);
+        panning = true;
+        startX = event.clientX - translateX;
+        startY = event.clientY - translateY;
     }
-  
+
     function pan(event) {
-      if (panning) {
-        translateX = event.clientX - startX;
-        translateY = event.clientY - startY;
-      }
+        if (panning) {
+            const tempX = event.clientX - startX;
+            const tempY = event.clientY - startY;
+            if (tempX <= 0) {
+                translateX = tempX;
+            }
+            if (tempY <= 0) {
+                translateY = tempY;
+            }
+        }
     }
-  
+
     function endPan() {
-      panning = false;
+        panning = false;
     }
-  </script>
-  
-  <div
-    class="board"
+</script>
+
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+    class="board bg-slate-500"
     on:wheel={handleWheel}
     on:mousedown={startPan}
     on:mousemove={pan}
     on:mouseup={endPan}
     on:mouseleave={endPan}
-    style="transform: scale({scale}) translate({translateX}px, {translateY}px);">
+    style="transform: scale({scale}) translate({translateX}px, {translateY}px);"
+>
     {#each $notes as note}
-        <Note {note}/>
+        <Note {note} />
     {/each}
     <!-- ... -->
-  </div>
-  
-  <style>
+</div>
+
+<style>
     .board {
-      width: 10000px;
-      height: 10000px;
-      overflow: auto;
-      cursor: grab;
-      transform-origin: top left;
+        width: 10000px;
+        height: 10000px;
+        overflow: auto;
+        cursor: grab;
+        transform-origin: top left;
     }
-  </style>
+</style>

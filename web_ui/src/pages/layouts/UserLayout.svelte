@@ -18,6 +18,6 @@
     <Auth />
 </div>
 <!-- <hr /> -->
-<main class="">
+<main class=" overflow-hidden">
     <Route {currentRoute} {params} />
 </main>
