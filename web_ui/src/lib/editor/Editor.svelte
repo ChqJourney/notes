@@ -71,9 +71,11 @@
           }, 1000);
    
       },
-      onDestroy({}) {
-        clearInterval(interval);
-      },
+      // onDestroy({}) {
+        // if(interval){
+        //   clearInterval(interval);
+        // }
+      // },
       editorProps: {
         handleDrop: function (view, event, slice, moved) {
           if (
@@ -149,7 +151,7 @@
   };
 </script>
 
-<div class="w-full h-[800px]">
+<div class="w-full bg-slate-300 h-[800px]">
   <input on:change={e=>to_be_saved_Note.title=e.target.value}
     type="text"
     id="large-input"
