@@ -112,7 +112,7 @@
 
         attributes: {
           class:
-            "prose w-full h-[800px] px-4 py-1 dark:prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-2xl focus:outline-none",
+            "prose w-full h-[800px] px-4 py-1 dark:prose-invert prose-sm sm:prose-base lg:prose-lg border-0 xl:prose-2xl focus:outline-none",
         },
       },
     });
@@ -149,7 +149,7 @@
   };
 </script>
 
-<div class="w-full h-[800px] border rounded-md">
+<div class="w-full h-[800px]">
   <input on:change={e=>to_be_saved_Note.title=e.target.value}
     type="text"
     id="large-input"
@@ -337,6 +337,6 @@
   hr {
     margin: 1rem;
     border: none;
-    border-top: 0.5px solid #ccc;
+    border-top: 0.5px solid rgb(204, 204, 204);
   }
 </style>

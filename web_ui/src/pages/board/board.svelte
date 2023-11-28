@@ -1,13 +1,14 @@
 <script>
-    import Note from "../../lib/notes/note.svelte";
+    import Editor from "../../lib/editor/Editor.svelte";
+import Note from "../../lib/notes/note.svelte";
     import { notes } from "../../lib/notes/noteStore";
 
     let scale = 1;
     let panning = false;
     let boardRect = { x: 0, y: 0 };
     let startX, startY;
-    let translateX = 0,
-        translateY = 0;
+    let translateX = -5000,
+        translateY = -5000;
 
     function handleWheel(event) {
         event.stopPropagation();
@@ -65,7 +66,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-    class="board bg-slate-500"
+    class="board bg-gray-800"
     on:wheel={handleWheel}
     on:mousedown={startPan}
     on:mousemove={pan}
@@ -73,8 +74,14 @@
     on:mouseleave={endPan}
     style="transform: scale({scale}) translate({translateX}px, {translateY}px);"
 >
-    {#each $notes as note}
-        <Note {note} />
+    {#each $notes as note}\
+    <Note {note} >
+        <!-- <div class="bg-slate-700 p-1 overflow-hidden rounded-md w-full h-full">
+            
+            <Editor/>
+        </div> -->
+    </Note>
+
     {/each}
     <!-- ... -->
 </div>
