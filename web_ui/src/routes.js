@@ -5,6 +5,7 @@ import Db from "./pages/db/db.svelte"
 import Index from "./pages/index.svelte"
 import TopLayout from "./pages/layouts/TopLayout.svelte"
 import UserLayout from "./pages/layouts/UserLayout.svelte"
+import Table from "./pages/tables/table.svelte"
 import { getUser, checkAndRefreshAuthState, userStore } from "./stores/userStore"
 
 let is_authed=false;
@@ -23,6 +24,11 @@ const routes = [
     nestedRoutes:[
 
     ]
+  },
+  {
+    name:"/tables",
+    component:Table,
+    layout:UserLayout
   },
   {
     name:'/board',
