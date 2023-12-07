@@ -1,22 +1,47 @@
 <script>
     export let totalCount,totalPage,currentPage,pageSize;
     export let next,previous,goto;
-    $:indexArr=Array.from({length:totalPage},(v,k)=>{
-        if(totalPage>10){
-            if(k+1<=currentPage+2&&k+1>=currentPage-2){
-                return k+1;
-            }else if(k+1<=2||k+1>=totalPage-2){
-                return k+1;
-            }else{
-                return 0;
-            }
-        }else{
-            return k+1;
-        }
-    });
+    console.log(totalPage)
+    $:indexArr=function getPaginationRange() {
+    let range = [];
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPage, currentPage + 2);
+    console.log(start,end)
+    
+      if (start >= 2) {
+        range.push('...');
+      }
+    
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    if (end < totalPage) {
+      if (end < totalPage - 1) {
+        range.push('...');
+      }
+      range.push(totalPage);
+    }
+    console.log(range)
+    return range;
+  }()
+    // $:indexArr=Array.from({length:totalPage},(v,k)=>{
+    //     if(totalPage>10){
+    //         if(k+1<=currentPage+2&&k+1>=currentPage-2){
+    //             return k+1;
+    //         }else if(k+1<=2||k+1>=totalPage-2){
+    //             return k+1;
+    //         }else{
+    //             return 0;
+    //         }
+    //     }else{
+    //         return k+1;
+    //     }
+    // });
 </script>
 <nav class="flex items-center justify-between pt-4 px-2" aria-label="Table navigation">
-    <span class="text-sm font-normal text-gray-500">Showing <span class="font-semibold text-gray-900 ">{(currentPage-1)*pageSize+1}-{totalCount<currentPage*pageSize?totalCount:currentPage*pageSize}</span> of <span class="font-semibold text-gray-900">{totalCount}</span></span>
+    <span class="text-sm font-normal dark:text-white text-gray-500">Showing <span class="font-semibold text-gray-900 dark:text-white ">{(currentPage-1)*pageSize+1}-{totalCount<currentPage*pageSize?totalCount:currentPage*pageSize}</span> of <span class="font-semibold text-gray-900 dark:text-white">{totalCount}</span></span>
     <slot></slot>
     <ul class="inline-flex items-center -space-x-px">
         <li>
@@ -27,24 +52,13 @@
         </li>
         
         {#each indexArr as index}
-            {#if index===currentPage}
-            <li>
-                <a href="#" aria-current="page" class="z-10 px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 ">{index}</a>
-            </li>
-            {:else if index!==0}
-            {#if index===currentPage-2}
-            <li class={`${index===currentPage-2?"add-dot":""}`}>
-                <a href="#" on:click={()=>goto(index)} class={`px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 `}>{index}</a>
-            </li>
-           {:else if index===currentPage+2}
-           <li class={`${index===currentPage+2?"follow-dot":""}`}>
-            <a href="#" on:click={()=>goto(index)} class={`px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700`}>{index}</a>
-        </li>
+        {#if index==="..."}
+        <span>...</span>
         {:else}
-        <li>
-            <a href="#" on:click={()=>goto(index)} class={`px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 `}>{index}</a>
-        </li>
-        {/if}
+            <li>
+                <a href="#" on:click={goto(index)} aria-current="page" class={`z-10 px-3 py-2 leading-tight ${index===currentPage?"border border-pink-300 text-blue-600 bg-blue-200 hover:bg-blue-100 hover:text-blue-700":"border border-gray-400 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-gray-800"}  `}>{index}</a>
+            </li>
+            
             {/if}
         {/each}
         <li>

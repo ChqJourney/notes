@@ -5,12 +5,12 @@
 
     export let rows = [];
     export let columnsConfig = [];
-    let currentPage = 0;
-    let pageSize = 3;
+    let currentPage = 1;
+    let pageSize = 5;
     let currentSorter;
     $: paginatedData = rows.slice(
-        currentPage * pageSize,
-        (currentPage + 1) * pageSize,
+        (currentPage-1) * pageSize,
+        (currentPage ) * pageSize,
     );
 
     console.log(rows);
@@ -116,7 +116,6 @@
     <tbody class="">
         {#each paginatedData as row, idx}
             <tr
-                style="height: 40px;"
                 tabindex={idx}
                 class={` border-b ${
                     selectedIdx === idx ? "bg-blue-300" : "bg-white"
@@ -163,7 +162,7 @@
     totalCount={rows.length}
     totalPage={Math.ceil(rows.length / pageSize)}
     {currentPage}
-    pageSize={10}
+    pageSize={pageSize}
 >
     <slot name="summary" />
 </Pagination>
@@ -183,7 +182,7 @@
         visibility: visible;
     }
     tr {
-        height: 40px;
+        height: auto;
         overflow: hidden;
     }
     th,
